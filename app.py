@@ -84,20 +84,22 @@ def send_confirmation_email(to_email: str, confirm_url: str) -> bool:
     port = int(os.environ.get('SMTP_PORT', '587'))
     user = os.environ.get('SMTP_USER')
     password = os.environ.get('SMTP_PASS')
-    from_addr = os.environ.get('SMTP_FROM') or user or 'no-reply@example.com'
+    # Use the authenticated SMTP user as the From address when possible to avoid SendAsDenied
+    from_addr = user or os.environ.get('SMTP_FROM') or 'no-reply@example.com'
     use_tls = os.environ.get('SMTP_USE_TLS', '1').lower() in ('1', 'true', 'yes')
 
     msg = EmailMessage()
     msg['Subject'] = 'Confirme sua inscrição — Planejador Tributário'
-    msg = EmailMessage()
-    msg['Subject'] = 'Confirme sua inscrição — Planejador Tributário'
     msg['From'] = from_addr
     msg['To'] = to_email
-    
-    text = f"Olá,\n\nClique no link abaixo para confirmar sua inscrição e acessar o Planejador Tributário:\n\n{confirm_url}\n\nSe você não solicitou, ignore esta mensagem.\n"
-    html = f"<p>Olá,</p><p>Clique no link abaixo para confirmar sua inscrição e acessar o <strong>Planejador Tributário</strong>:</p><p><a href=\"{confirm_url}\">Confirmar inscrição</a></p><p>Se você não solicitou, ignore esta mensagem.</p>"
+    # Use plain text email content (simpler, 'feio' but reliable)
+    text = (
+        "Olá,\n\n"
+        "Clique no link abaixo para confirmar sua inscrição e acessar o Planejador Tributário:\n\n"
+        f"{confirm_url}\n\n"
+        "Se você não solicitou, ignore esta mensagem.\n"
+    )
     msg.set_content(text)
-    msg.add_alternative(html, subtype='html')
 
     try:
         logging.info('Connecting to SMTP %s:%s (tls=%s)', host, port, use_tls)
@@ -268,6 +270,14 @@ def resend():
         print(f'Confirmation link for {email}: {confirm_url}')
         return jsonify({'sent': False, 'message': 'Envio falhou; link impresso no servidor'}), 200
 
+
+@app.route('/debug/subscribers', methods=['GET'])
+def debug_subscribers():
+    """Temporary debug route: return the list of subscriber emails the server currently sees."""
+    subs = load_subscribers()
+    emails = [s.get('email') for s in subs if s.get('email')]
+    return jsonify({'count': len(emails), 'emails': emails}), 200
+
 if __name__ == '__main__':
     # Print local IPv4 addresses to help connect from other machines on the same LAN
     try:
@@ -291,4 +301,9 @@ if __name__ == '__main__':
     except Exception:
         pass
     # Bind to all interfaces so other machines on the LAN can access (for testing only)
+    # Print SMTP debug info (do not print passwords)
+    try:
+        logging.info('Startup SMTP check: SMTP_HOST=%s SMTP_USER=%s', os.environ.get('SMTP_HOST'), os.environ.get('SMTP_USER'))
+    except Exception:
+        pass
     app.run(host='0.0.0.0', port=5000, debug=False)
