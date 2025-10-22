@@ -187,6 +187,41 @@ document.addEventListener('DOMContentLoaded', function(){
         </div>
       `;
       const resultEl = document.getElementById('calc-result'); if(resultEl) resultEl.innerHTML = breakdownHtml;
+
+      // --- comparative scenario: 100% service ---
+      const servicePct100 = 1.0;
+      const serviceAmount100 = faturamento * servicePct100;
+      const commerceAmount100 = faturamento * (1 - servicePct100);
+      const pis_service_100 = serviceAmount100 * pisRate;
+      const cofins_service_100 = serviceAmount100 * cofinsRate;
+      const irpj_s_100 = serviceAmount100 * irpj_service;
+      const csll_s_100 = serviceAmount100 * csll_service;
+      const iss_service_100 = serviceAmount100 * issPct;
+      const total_service_100 = pis_service_100 + cofins_service_100 + irpj_s_100 + csll_s_100 + iss_service_100;
+      const grand_total_100 = total_service_100; // commerce part is zero
+
+      // comparison block
+      const diff = grand_total - grand_total_100; // positive means current > 100% service
+      const diffPct = (diff / (grand_total_100 || 1)) * 100;
+      const comparisonHtml = `
+        <div class="breakdown">
+          <h3>Comparativo — seu cenário vs 100% SERVIÇO</h3>
+          <div>Seu total: <strong>R$ ${fmt(grand_total)}</strong></div>
+          <div>100% Serviço: <strong>R$ ${fmt(grand_total_100)}</strong></div>
+          <div>Diferença: <strong>R$ ${fmt(diff)}</strong> (${diffPct.toFixed(2)}%)</div>
+        </div>
+
+        <div class="breakdown">
+          <h3>Resumo 100% SERVIÇO</h3>
+          <div>PIS: R$ ${fmt(pis_service_100)}</div>
+          <div>COFINS: R$ ${fmt(cofins_service_100)}</div>
+          <div>IRPJ: R$ ${fmt(irpj_s_100)}</div>
+          <div>CSLL: R$ ${fmt(csll_s_100)}</div>
+          <div>ISS: R$ ${fmt(iss_service_100)}</div>
+          <div class="break-total"><strong>Total 100% serviço: R$ ${fmt(total_service_100)}</strong></div>
+        </div>
+      `;
+      if(resultEl) resultEl.innerHTML += comparisonHtml;
     }catch(err){
       console.error(err);
       const message = document.getElementById('message'); if(message) message.textContent = 'Erro no cálculo. Verifique os valores.';
