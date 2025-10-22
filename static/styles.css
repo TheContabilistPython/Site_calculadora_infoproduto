@@ -1,0 +1,85 @@
+:root{
+  --black: #050608; /* preto profundo */
+  --white: #ffffff;
+  --gray-900: #0f1724;
+  --gray-600: #4b5563;
+  --gray-500: #6b7280;
+  --baby-blue: #bdefff; /* azul bebê claro */
+  --accent: #7fd3ff; /* tom levemente mais vivo para gradiente */
+  --glass: rgba(255,255,255,0.03);
+}
+
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  font-family: Inter,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+  background: linear-gradient(180deg,var(--black), var(--gray-900));
+  color: var(--white);
+  -webkit-font-smoothing:antialiased;
+}
+
+.wrap{max-width:820px;margin:48px auto;padding:24px}
+.hero{display:flex;flex-direction:column;align-items:center;text-align:center;gap:12px}
+.logo{width:88px;height:88px;border-radius:16px;background:linear-gradient(135deg,var(--baby-blue),var(--accent));display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--black);box-shadow:0 6px 24px rgba(0,0,0,0.5)}
+h1{margin:0;font-size:30px}
+.lead{color:var(--gray-500);margin:0}
+
+.card{margin-top:28px;background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent);padding:22px;border-radius:12px;box-shadow:0 8px 40px rgba(2,6,23,0.6);border:1px solid rgba(255,255,255,0.03)}
+.card label{display:block;margin-bottom:8px;color:var(--gray-500);font-size:13px;font-weight:600;letter-spacing:0.6px}
+.card input[type="text"],
+.card input[type="email"]{
+  width:100%;
+  padding:12px 14px;
+  border-radius:10px;
+  border:1px solid rgba(255,255,255,0.04);
+  background:var(--glass);
+  color:var(--white);
+  font-size:15px;
+  margin-bottom:12px;
+}
+.card input::placeholder{color:rgba(255,255,255,0.45)}
+.consent{display:flex;align-items:center;gap:10px;margin-top:2px}
+.consent input{width:18px;height:18px}
+
+button{
+  margin-top:16px;width:100%;padding:12px 14px;border-radius:10px;border:0;background:linear-gradient(90deg,var(--baby-blue),var(--accent));color:var(--black);font-weight:700;cursor:pointer}
+button:disabled{opacity:0.6;cursor:not-allowed}
+.secondary{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--white);padding:8px 12px;margin-left:8px}
+.message{margin-top:12px;color:var(--gray-600)}
+.foot{margin-top:18px;text-align:center;color:var(--gray-500);font-size:13px}
+
+/* Responsividade */
+@media (max-width:520px){
+  .wrap{padding:16px;margin:28px auto}
+  .logo{width:68px;height:68px}
+  h1{font-size:22px}
+}
+
+/* app area */
+.hidden{display:none}
+.app-area{margin-top:28px;background:rgba(255,255,255,0.02);padding:20px;border-radius:10px}
+.tabs{display:flex;gap:8px;margin-bottom:16px}
+.tabs .tab{padding:8px 12px;border-radius:8px;background:transparent;border:1px solid rgba(255,255,255,0.04);cursor:pointer;color:var(--white)}
+.tabs .tab.active{background:linear-gradient(90deg,var(--baby-blue),var(--accent));color:var(--black);font-weight:700}
+.tab-content .panel{display:none}
+.tab-content .panel.active{display:block}
+.calc{display:flex;flex-direction:column;gap:8px;max-width:420px}
+.calc-result{margin-top:8px;color:var(--baby-blue);font-weight:700}
+
+.breakdown{background:rgba(255,255,255,0.02);padding:10px;border-radius:8px;margin-top:10px}
+.breakdown h3{margin:0 0 8px 0;font-size:16px}
+.breakdown div{margin:4px 0;color:var(--white)}
+.breakdown .break-total{margin-top:8px;color:var(--baby-blue)}
+.breakdown.grand{background:linear-gradient(90deg,var(--baby-blue),var(--accent));color:var(--black)}
+
+
+/* tax table */
+.tax-table{border-collapse:collapse;background:rgba(0,0,0,0.12)}
+.tax-table th,.tax-table td{padding:8px;border:1px solid rgba(255,255,255,0.04);text-align:left}
+.tax-table thead th{background:rgba(255,255,255,0.03);font-weight:700}
+
+/* slider style (basic) */
+input[type=range]{appearance:none;-webkit-appearance:none;height:8px;background:linear-gradient(90deg,var(--baby-blue),var(--accent));border-radius:8px}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--black);box-shadow:0 2px 6px rgba(0,0,0,0.4)}
+

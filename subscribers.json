@@ -1,0 +1,103 @@
+[
+  {
+    "empresa": "teste1",
+    "email": "teste@gmail.com",
+    "consent": true,
+    "confirm_token": "a49358c3032e4c7892cfba2d35ed82b1"
+  },
+  {
+    "empresa": "teste1",
+    "email": "tetse@gmail.com",
+    "consent": true,
+    "whatsapp": "551148991013419"
+  },
+  {
+    "empresa": "eduardo",
+    "email": "1@123.com.br",
+    "consent": true
+  },
+  {
+    "empresa": "Regen Medical Training Ltda",
+    "email": "vinicius@prontasc.com.br",
+    "consent": true,
+    "whatsapp": "551148996325028"
+  },
+  {
+    "empresa": "eduardo",
+    "email": "eduardoakacio49@gmail.com",
+    "consent": true,
+    "confirmed": true,
+    "confirm_token": "6accc1b851234a89a15d39d1b2c69e09",
+    "whatsapp": "551149991013419"
+  },
+  {
+    "empresa": "suarez",
+    "email": "congitos@gmail.com",
+    "consent": true,
+    "confirmed": false,
+    "confirm_token": "667a434fbdb14d1cbb77e252253d4fe8"
+  },
+  {
+    "empresa": "eduardo",
+    "email": "edaurdoakacio48@gmail.com",
+    "consent": true,
+    "confirmed": true,
+    "confirm_token": "e0e62927915445349a8d37ce73f0d1a5",
+    "whatsapp": "551149991013419"
+  },
+  {
+    "empresa": "Teste Empresa",
+    "email": "suporte@prontasc.com.br",
+    "consent": true,
+    "confirmed": true,
+    "confirm_token": "5a5f27db5fa54335acac0591f88f852c",
+    "whatsapp": "5511999999999"
+  },
+  {
+    "empresa": "epopeia",
+    "email": "eduardopiaia7@gmail.com",
+    "consent": true,
+    "confirmed": true,
+    "confirm_token": "4ae4a3056ff94dd985b77d2cf156110c",
+    "whatsapp": "5511999999999"
+  },
+  {
+    "empresa": "amem",
+    "email": "eduardopiaia49@gmail.com",
+    "consent": true,
+    "confirmed": true,
+    "confirm_token": "7a4dc1eb92a346049b46d0148d551d71",
+    "whatsapp": "551149991013419"
+  },
+  {
+    "empresa": "NEO LABS TRAINING",
+    "email": "societario@prontasc.com.br",
+    "consent": true,
+    "confirmed": true,
+    "confirm_token": "b1b0f38dbb9e4ae7ae9e41bbcd81c941",
+    "whatsapp": "551147991897348"
+  },
+  {
+    "empresa": "eduardoakacio",
+    "email": "eduardopiaia8@gmail.com",
+    "consent": true,
+    "confirmed": false,
+    "confirm_token": "2d20b9862fcf407a8e36ab7bd86a94dd",
+    "whatsapp": "551149991013419"
+  },
+  {
+    "empresa": "eduardo",
+    "email": "eduardopiaia33@gmail.com",
+    "consent": true,
+    "confirmed": false,
+    "confirm_token": "95dc56527555455b8777ec56243328ec",
+    "whatsapp": "55114999101314"
+  },
+  {
+    "empresa": "cristalis silver wear",
+    "email": "cristalissilverwear@gmail.com",
+    "consent": true,
+    "confirmed": false,
+    "confirm_token": "51a765c3c5a24e588e0021794d2ee05b"
+  }
+]
