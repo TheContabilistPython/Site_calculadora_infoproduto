@@ -486,23 +486,19 @@ document.addEventListener('DOMContentLoaded', function(){
     if(res) res.innerHTML = '';
   });
 
-  // --- PDF Export Logic ---
-  const btnExportPdf = document.getElementById('btn-export-pdf');
-  if(btnExportPdf) {
-    btnExportPdf.addEventListener('click', () => {
-      // Create a temporary container for the PDF content
+  // --- HTML Report Export Logic ---
+  const btnExportHtml = document.getElementById('btn-export-html');
+  if(btnExportHtml) {
+    btnExportHtml.addEventListener('click', () => {
+      // Create a temporary container for the report content
       const reportContainer = document.createElement('div');
-      reportContainer.style.width = '800px'; // Fixed width for A4 consistency
+      reportContainer.style.width = '100%';
+      reportContainer.style.maxWidth = '800px';
+      reportContainer.style.margin = '0 auto';
       reportContainer.style.padding = '40px';
       reportContainer.style.background = '#ffffff';
       reportContainer.style.color = '#000000';
       reportContainer.style.fontFamily = 'Arial, sans-serif';
-      
-      // Position off-screen but in DOM to ensure correct rendering
-      reportContainer.style.position = 'absolute';
-      reportContainer.style.left = '-9999px';
-      reportContainer.style.top = '0';
-      document.body.appendChild(reportContainer);
       
       // Header
       const header = document.createElement('div');
@@ -523,7 +519,6 @@ document.addEventListener('DOMContentLoaded', function(){
       
       // Lucro Presumido
       const lpResult = document.getElementById('calc-result');
-      // Check if we have the result grid (since table was removed)
       const lpGrid = lpResult ? lpResult.querySelector('.result-grid') : null;
       
       if(lpResult && lpGrid) {
@@ -532,14 +527,10 @@ document.addEventListener('DOMContentLoaded', function(){
         section.style.marginBottom = '30px';
         section.innerHTML = `<h3 style="color: #0f1724; border-bottom: 2px solid #bdefff; padding-bottom: 5px;">Lucro Presumido</h3>`;
         
-        // Clone and style for PDF
         const clone = lpResult.cloneNode(true);
-        
-        // Remove table if it exists in clone (just in case)
         const table = clone.querySelector('table');
         if(table) table.remove();
 
-        // Style Breakdown Grid
         const grid = clone.querySelector('.result-grid');
         if(grid) {
             grid.style.display = 'flex';
@@ -549,7 +540,6 @@ document.addEventListener('DOMContentLoaded', function(){
             grid.style.justifyContent = 'space-between';
         }
 
-        // Style Breakdown Boxes
         const breakdowns = clone.querySelectorAll('.breakdown');
         breakdowns.forEach(box => {
             box.style.background = '#f9fafb';
@@ -560,7 +550,6 @@ document.addEventListener('DOMContentLoaded', function(){
             box.style.flex = '1 1 30%';
             box.style.minWidth = '200px';
             
-            // Fix internal text colors
             const divs = box.querySelectorAll('div');
             divs.forEach(d => d.style.color = '#000');
             const h3 = box.querySelector('h3');
@@ -583,13 +572,11 @@ document.addEventListener('DOMContentLoaded', function(){
         
         const clone = snResult.cloneNode(true);
         
-        // Force text color black
         const allElements = clone.getElementsByTagName('*');
         for(let el of allElements) {
             el.style.color = '#000000';
         }
 
-        // Fix main wrapper background (it was dark rgba)
         const mainWrapper = clone.querySelector('div[style*="background"]');
         if(mainWrapper) {
             mainWrapper.style.background = 'transparent';
@@ -597,7 +584,6 @@ document.addEventListener('DOMContentLoaded', function(){
             mainWrapper.style.padding = '0';
         }
 
-        // Fix Grid Layout for PDF
         const grid = clone.querySelector('div[style*="display:grid"]');
         if(grid) {
             grid.style.display = 'flex';
@@ -607,19 +593,16 @@ document.addEventListener('DOMContentLoaded', function(){
             grid.style.justifyContent = 'space-between';
         }
 
-        // Style the boxes (Service, Info, Scenario)
         const boxes = clone.querySelectorAll('div[style*="border-radius"]');
         boxes.forEach(box => {
             box.style.background = '#f9fafb';
             box.style.border = '1px solid #e5e7eb';
             box.style.marginBottom = '0';
             box.style.padding = '15px';
-            box.style.flex = '1 1 30%'; // Try to fit 3 in a row
+            box.style.flex = '1 1 30%';
             box.style.minWidth = '200px';
-            box.style.pageBreakInside = 'avoid';
         });
 
-        // Fix titles inside boxes
         const boxTitles = clone.querySelectorAll('h4');
         boxTitles.forEach(t => t.style.color = '#000');
 
@@ -641,7 +624,6 @@ document.addEventListener('DOMContentLoaded', function(){
       contact.style.border = '1px solid #bdefff';
       contact.style.borderRadius = '8px';
       contact.style.textAlign = 'center';
-      contact.style.pageBreakInside = 'avoid';
       contact.innerHTML = `
         <h4 style="margin: 0 0 10px; color: #0f1724; font-size: 16px;">Dúvidas?</h4>
         <p style="margin: 0; color: #0f1724; font-size: 14px;">Se tiver mais dúvidas, chame o número <strong>+55 48 99632-5028</strong> no WhatsApp.</p>
@@ -660,18 +642,31 @@ document.addEventListener('DOMContentLoaded', function(){
       `;
       reportContainer.appendChild(footer);
 
-      // Generate PDF
-      const opt = {
-        margin: 10,
-        filename: 'Relatorio_Planejamento_Tributario_ProntaMais.pdf',
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2, useCORS: true },
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-      };
-
-      html2pdf().set(opt).from(reportContainer).save().then(() => {
-        document.body.removeChild(reportContainer);
-      });
+      // Open new window and write HTML
+      const win = window.open('', '_blank');
+      win.document.write(`
+        <!DOCTYPE html>
+        <html lang="pt-BR">
+        <head>
+          <meta charset="UTF-8">
+          <title>Relatório de Planejamento Tributário</title>
+          <style>
+            body { margin: 0; padding: 0; background: #f3f4f6; }
+            @media print {
+              body { background: #fff; }
+              .no-print { display: none; }
+            }
+          </style>
+        </head>
+        <body>
+          ${reportContainer.outerHTML}
+          <div class="no-print" style="text-align:center; padding: 20px;">
+            <button onclick="window.print()" style="padding: 10px 20px; font-size: 16px; cursor: pointer; background: #0f1724; color: #fff; border: none; border-radius: 5px;">Imprimir / Salvar PDF</button>
+          </div>
+        </body>
+        </html>
+      `);
+      win.document.close();
     });
   }
 });
