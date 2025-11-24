@@ -428,18 +428,22 @@ document.addEventListener('DOMContentLoaded', function(){
       const totalTax = taxService + taxInfo;
       const totalEffectiveRate = (faturamentoTotal > 0) ? (totalTax / faturamentoTotal) : 0;
 
+      // Scenario: 100% Service
+      const taxServiceFull = faturamentoTotal * effectiveRateIII;
+      const economy = taxServiceFull - totalTax;
+
       function fmt(v){ return Number(v).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2}); }
 
       const resultEl = document.getElementById('calc-result-simples');
       if(resultEl){
         resultEl.innerHTML = `
-          <div class="breakdown grand" style="text-align:center; max-width:800px; margin:0 auto;">
+          <div class="breakdown grand" style="text-align:center; max-width:1000px; margin:0 auto;">
             <h3>Resultado Simples Nacional</h3>
             <div style="margin-bottom:16px; text-align:center;">
                <div style="margin:4px 0">Receita Bruta 12 meses (Base): <strong style="color:var(--white)">R$ ${fmt(rbt12)}</strong></div>
             </div>
 
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px; margin-bottom:20px; text-align:left;">
+            <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:20px; margin-bottom:20px; text-align:left;">
               <!-- Anexo III (Service) -->
               <div style="background:rgba(255,255,255,0.05); padding:15px; border-radius:8px;">
                 <h4 style="margin-top:0; color:var(--baby-blue)">Serviço (Anexo III)</h4>
@@ -458,6 +462,17 @@ document.addEventListener('DOMContentLoaded', function(){
                 <div style="margin:4px 0">Parcela a Deduzir: <strong>R$ ${fmt(bracketI.deduz)}</strong></div>
                 <div style="margin:4px 0">Alíquota Efetiva: <strong>${(effectiveRateI * 100).toFixed(2)}%</strong></div>
                 <div style="margin-top:8px; border-top:1px solid rgba(255,255,255,0.2); padding-top:4px;">Imposto: <strong>R$ ${fmt(taxInfo)}</strong></div>
+              </div>
+
+              <!-- Scenario 100% Service -->
+              <div style="background:rgba(255,255,255,0.05); padding:15px; border-radius:8px; border:1px dashed rgba(255,255,255,0.3);">
+                <h4 style="margin-top:0; color:#ffb7b7">Cenário: 100% Serviço</h4>
+                <div style="font-size:0.9em; margin-bottom:8px; color:var(--gray-500)">Se todo faturamento fosse Anexo III</div>
+                <div style="margin:4px 0">Alíquota Efetiva: <strong>${(effectiveRateIII * 100).toFixed(2)}%</strong></div>
+                <div style="margin:4px 0">Imposto Total: <strong>R$ ${fmt(taxServiceFull)}</strong></div>
+                <div style="margin-top:12px; border-top:1px solid rgba(255,255,255,0.2); padding-top:4px; color:var(--baby-blue)">
+                   Economia Atual: <strong>R$ ${fmt(economy)}</strong>
+                </div>
               </div>
 
               <div class="break-total" style="grid-column: 1 / -1; font-size:1.3em; border-top:1px solid rgba(255,255,255,0.2); padding-top:12px; color:var(--white); text-align:center;">
