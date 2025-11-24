@@ -437,7 +437,7 @@ document.addEventListener('DOMContentLoaded', function(){
       const resultEl = document.getElementById('calc-result-simples');
       if(resultEl){
         resultEl.innerHTML = `
-          <div class="breakdown grand" style="text-align:center; max-width:1000px; margin:0 auto;">
+          <div class="breakdown grand" style="text-align:center; max-width:100%; margin:0 auto;">
             <h3>Resultado Simples Nacional</h3>
             <div style="margin-bottom:16px; text-align:center;">
                <div style="margin:4px 0">Receita Bruta 12 meses (Base): <strong style="color:var(--white)">R$ ${fmt(rbt12)}</strong></div>
