@@ -517,10 +517,10 @@ document.addEventListener('DOMContentLoaded', function(){
       
       // Lucro Presumido
       const lpResult = document.getElementById('calc-result');
-      // Check if table has rows (it's hidden by default but might have content)
-      const lpTableBody = lpResult ? lpResult.querySelector('tbody') : null;
+      // Check if we have the result grid (since table was removed)
+      const lpGrid = lpResult ? lpResult.querySelector('.result-grid') : null;
       
-      if(lpResult && lpTableBody && lpTableBody.children.length > 0) {
+      if(lpResult && lpGrid) {
         hasContent = true;
         const section = document.createElement('div');
         section.style.marginBottom = '30px';
@@ -619,14 +619,29 @@ document.addEventListener('DOMContentLoaded', function(){
 
       reportContainer.appendChild(content);
 
+      // Contact Section
+      const contact = document.createElement('div');
+      contact.style.marginTop = '30px';
+      contact.style.padding = '20px';
+      contact.style.background = '#f0f9ff';
+      contact.style.border = '1px solid #bdefff';
+      contact.style.borderRadius = '8px';
+      contact.style.textAlign = 'center';
+      contact.style.pageBreakInside = 'avoid';
+      contact.innerHTML = `
+        <h4 style="margin: 0 0 10px; color: #0f1724; font-size: 16px;">Dúvidas?</h4>
+        <p style="margin: 0; color: #0f1724; font-size: 14px;">Se tiver mais dúvidas, chame o número <strong>+55 48 99632-5028</strong> no WhatsApp.</p>
+      `;
+      reportContainer.appendChild(contact);
+
       // Footer
       const footer = document.createElement('div');
-      footer.style.marginTop = '40px';
+      footer.style.marginTop = '20px';
       footer.style.textAlign = 'center';
       footer.style.fontSize = '10px';
       footer.style.color = '#9ca3af';
       footer.innerHTML = `
-        <p>Pronta+ Inteligência Empresarial | Contato: (48) 99632-5028</p>
+        <p>Pronta+ Inteligência Empresarial</p>
         <p>Este relatório é uma simulação e não substitui uma análise tributária oficial.</p>
       `;
       reportContainer.appendChild(footer);
