@@ -300,4 +300,194 @@ document.addEventListener('DOMContentLoaded', function(){
       const svcSlider2 = document.getElementById('servicePercent'); if(svcSlider2) svcSlider2.value = v;
     });
   }
+
+  // --- Simples Nacional Logic (Anexo I & III) ---
+  const anexoI = [
+    {min:0, max:180000, aliquota:0.04, deduz:0.0},
+    {min:180000.01, max:360000, aliquota:0.073, deduz:5940},
+    {min:360000.01, max:720000, aliquota:0.095, deduz:13860},
+    {min:720000.01, max:1800000, aliquota:0.107, deduz:22500},
+    {min:1800000.01, max:3600000, aliquota:0.143, deduz:87300},
+    {min:3600000.01, max:4800000, aliquota:0.19, deduz:378000}
+  ];
+
+  const anexoIII = [
+    {min:0, max:180000, aliquota:0.06, deduz:0.0},
+    {min:180000.01, max:360000, aliquota:0.112, deduz:9360},
+    {min:360000.01, max:720000, aliquota:0.135, deduz:17640},
+    {min:720000.01, max:1800000, aliquota:0.16, deduz:35640},
+    {min:1800000.01, max:3600000, aliquota:0.21, deduz:125640},
+    {min:3600000.01, max:4800000, aliquota:0.33, deduz:648000}
+  ];
+
+  // Sync sliders for Simples
+  const svcSliderSimples = document.getElementById('servicePercentSimples');
+  const svcInputSimples = document.getElementById('servicePercentInputSimples');
+  const svcValLabel = document.getElementById('servicePctValSimples');
+  const infoValLabel = document.getElementById('complementPctValSimples');
+
+  function syncSimples(source) {
+    let val = parseInt(source.value);
+    if(isNaN(val)) val = 0;
+    if(val < 0) val = 0; 
+    if(val > 100) val = 100;
+
+    // Update source to ensure validity
+    source.value = val;
+
+    // Sync pair
+    if(source === svcSliderSimples && svcInputSimples) svcInputSimples.value = val;
+    if(source === svcInputSimples && svcSliderSimples) svcSliderSimples.value = val;
+
+    // Update Labels
+    if(svcValLabel) svcValLabel.textContent = val;
+    if(infoValLabel) infoValLabel.textContent = 100 - val;
+  }
+
+  if(svcSliderSimples) svcSliderSimples.addEventListener('input', () => syncSimples(svcSliderSimples));
+  if(svcInputSimples) svcInputSimples.addEventListener('input', () => syncSimples(svcInputSimples));
+
+  // Toggle "Meses de atividade" input visibility
+  const less12Check = document.getElementById('less-12-months');
+  const monthsGroup = document.getElementById('months-activity-group');
+  if(less12Check && monthsGroup){
+    less12Check.addEventListener('change', ()=>{
+      if(less12Check.checked){
+        monthsGroup.classList.remove('hidden');
+      } else {
+        monthsGroup.classList.add('hidden');
+      }
+    });
+  }
+
+  function performSimplesCalculation(){
+    try {
+      const faturamentoTotal = parseFloat(document.getElementById('faturamento-simples').value) || 0;
+      let rbt12Input = document.getElementById('rbt12').value;
+      let rbt12 = parseFloat(rbt12Input);
+      
+      const isLess12 = document.getElementById('less-12-months').checked;
+      const monthsActivity = parseInt(document.getElementById('months-activity').value) || 1;
+
+      // Get Split
+      let servicePct = 100;
+      if(svcSliderSimples) servicePct = parseFloat(svcSliderSimples.value);
+      const infoPct = 100 - servicePct;
+
+      const revenueService = faturamentoTotal * (servicePct / 100);
+      const revenueInfo = faturamentoTotal * (infoPct / 100);
+
+      // Logic for RBT12 determination
+      if (isLess12) {
+        if (monthsActivity === 1) {
+          rbt12 = faturamentoTotal * 12;
+        } else {
+          let accumulated = rbt12; 
+          if (isNaN(accumulated) || rbt12Input.trim() === '') {
+             accumulated = 0; 
+          }
+          rbt12 = (accumulated / monthsActivity) * 12;
+        }
+      } else {
+        if (isNaN(rbt12) || rbt12Input.trim() === '') {
+          rbt12 = faturamentoTotal * 12;
+        }
+      }
+
+      if (rbt12 > 4800000) {
+        alert("A empresa será desenquadrada por ultrapassar o limite de faturamento Anual do Simples Nacional");
+        const resultEl = document.getElementById('calc-result-simples');
+        if(resultEl) resultEl.innerHTML = '';
+        return;
+      }
+
+      // Calculate Effective Rate for Anexo III (Service)
+      let bracketIII = anexoIII.find(b => rbt12 >= b.min && rbt12 <= b.max);
+      if (!bracketIII) bracketIII = (rbt12 > 4800000) ? anexoIII[anexoIII.length - 1] : anexoIII[0];
+      
+      let effectiveRateIII = 0;
+      if (rbt12 > 0) {
+        effectiveRateIII = ((rbt12 * bracketIII.aliquota) - bracketIII.deduz) / rbt12;
+      } else {
+        effectiveRateIII = bracketIII.aliquota; 
+      }
+      const taxService = revenueService * effectiveRateIII;
+
+      // Calculate Effective Rate for Anexo I (Infoproduto)
+      let bracketI = anexoI.find(b => rbt12 >= b.min && rbt12 <= b.max);
+      if (!bracketI) bracketI = (rbt12 > 4800000) ? anexoI[anexoI.length - 1] : anexoI[0];
+
+      let effectiveRateI = 0;
+      if (rbt12 > 0) {
+        effectiveRateI = ((rbt12 * bracketI.aliquota) - bracketI.deduz) / rbt12;
+      } else {
+        effectiveRateI = bracketI.aliquota;
+      }
+      const taxInfo = revenueInfo * effectiveRateI;
+
+      const totalTax = taxService + taxInfo;
+      const totalEffectiveRate = (faturamentoTotal > 0) ? (totalTax / faturamentoTotal) : 0;
+
+      function fmt(v){ return Number(v).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+
+      const resultEl = document.getElementById('calc-result-simples');
+      if(resultEl){
+        resultEl.innerHTML = `
+          <div class="breakdown grand" style="text-align:center; max-width:800px; margin:0 auto;">
+            <h3>Resultado Simples Nacional</h3>
+            <div style="margin-bottom:16px; text-align:center;">
+               <div style="margin:4px 0">Receita Bruta 12 meses (Base): <strong style="color:var(--gray-900)">R$ ${fmt(rbt12)}</strong></div>
+            </div>
+
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px; margin-bottom:20px; text-align:left;">
+              <!-- Anexo III (Service) -->
+              <div style="background:rgba(0,0,0,0.03); padding:15px; border-radius:8px;">
+                <h4 style="margin-top:0; color:var(--baby-blue)">Serviço (Anexo III)</h4>
+                <div style="font-size:0.9em; margin-bottom:8px;">Faturamento: <strong>R$ ${fmt(revenueService)}</strong> (${servicePct.toFixed(0)}%)</div>
+                <div style="margin:4px 0">Alíquota Nominal: <strong>${(bracketIII.aliquota * 100).toFixed(2)}%</strong></div>
+                <div style="margin:4px 0">Parcela a Deduzir: <strong>R$ ${fmt(bracketIII.deduz)}</strong></div>
+                <div style="margin:4px 0">Alíquota Efetiva: <strong>${(effectiveRateIII * 100).toFixed(2)}%</strong></div>
+                <div style="margin-top:8px; border-top:1px solid #ddd; padding-top:4px;">Imposto: <strong>R$ ${fmt(taxService)}</strong></div>
+              </div>
+
+              <!-- Anexo I (Infoproduto) -->
+              <div style="background:rgba(0,0,0,0.03); padding:15px; border-radius:8px;">
+                <h4 style="margin-top:0; color:var(--baby-blue)">Infoproduto (Anexo I)</h4>
+                <div style="font-size:0.9em; margin-bottom:8px;">Faturamento: <strong>R$ ${fmt(revenueInfo)}</strong> (${infoPct.toFixed(0)}%)</div>
+                <div style="margin:4px 0">Alíquota Nominal: <strong>${(bracketI.aliquota * 100).toFixed(2)}%</strong></div>
+                <div style="margin:4px 0">Parcela a Deduzir: <strong>R$ ${fmt(bracketI.deduz)}</strong></div>
+                <div style="margin:4px 0">Alíquota Efetiva: <strong>${(effectiveRateI * 100).toFixed(2)}%</strong></div>
+                <div style="margin-top:8px; border-top:1px solid #ddd; padding-top:4px;">Imposto: <strong>R$ ${fmt(taxInfo)}</strong></div>
+              </div>
+
+              <div class="break-total" style="grid-column: 1 / -1; font-size:1.3em; border-top:1px solid rgba(0,0,0,0.1); padding-top:12px; color:var(--gray-900); text-align:center;">
+                <div>Total Imposto a Pagar: <strong>R$ ${fmt(totalTax)}</strong></div>
+                <div style="font-size:0.7em; font-weight:normal; margin-top:5px;">Alíquota Efetiva Geral: <strong>${(totalEffectiveRate * 100).toFixed(2)}%</strong></div>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
+    } catch(e) {
+      console.error(e);
+    }
+  }
+
+  const btnSimples = document.getElementById('calc-run-simples');
+  if(btnSimples) btnSimples.addEventListener('click', performSimplesCalculation);
+
+  const btnResetSimples = document.getElementById('calc-reset-simples');
+  if(btnResetSimples) btnResetSimples.addEventListener('click', ()=>{
+    const fatInput = document.getElementById('faturamento-simples'); if(fatInput) fatInput.value = 50000;
+    const rbtInput = document.getElementById('rbt12'); if(rbtInput) rbtInput.value = '';
+    const less12 = document.getElementById('less-12-months'); if(less12) { less12.checked = false; less12.dispatchEvent(new Event('change')); }
+    const months = document.getElementById('months-activity'); if(months) months.value = '';
+    
+    // Reset sliders
+    if(svcSliderSimples) { svcSliderSimples.value = 100; syncSimples(svcSliderSimples); }
+
+    const res = document.getElementById('calc-result-simples');
+    if(res) res.innerHTML = '';
+  });
 });

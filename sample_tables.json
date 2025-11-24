@@ -1,0 +1,49 @@
+{
+  "anexo_I": [
+    {"min":0,"max":180000,"aliquota":0.04,"deduz":0.0},
+    {"min":180000.01,"max":360000,"aliquota":0.073,"deduz":5940},
+    {"min":360000.01,"max":720000,"aliquota":0.095,"deduz":13860},
+    {"min":720000.01,"max":1800000,"aliquota":0.107,"deduz":22500},
+    {"min":1800000.01,"max":3600000,"aliquota":0.143,"deduz":87300},
+    {"min":3600000.01,"max":4800000,"aliquota":0.19,"deduz":378000}
+  ],
+  "anexo_II": [
+    {"min":0,"max":180000,"aliquota":0.045,"deduz":0.0},
+    {"min":180000.01,"max":360000,"aliquota":0.078,"deduz":5940},
+    {"min":360000.01,"max":720000,"aliquota":0.10,"deduz":13860},
+    {"min":720000.01,"max":1800000,"aliquota":0.112,"deduz":22500},
+    {"min":1800000.01,"max":3600000,"aliquota":0.147,"deduz":85500},
+    {"min":3600000.01,"max":4800000,"aliquota":0.30,"deduz":720000}
+  ],
+  "anexo_III": [
+    {"min":0,"max":180000,"aliquota":0.06,"deduz":0.0},
+    {"min":180000.01,"max":360000,"aliquota":0.112,"deduz":9360},
+    {"min":360000.01,"max":720000,"aliquota":0.135,"deduz":17640},
+    {"min":720000.01,"max":1800000,"aliquota":0.16,"deduz":35640},
+    {"min":1800000.01,"max":3600000,"aliquota":0.21,"deduz":125640},
+    {"min":3600000.01,"max":4800000,"aliquota":0.33,"deduz":648000}
+  ],
+  "anexo_IV": [
+    {"min":0,"max":180000,"aliquota":0.045,"deduz":0.0},
+    {"min":180000.01,"max":360000,"aliquota":0.09,"deduz":8100},
+    {"min":360000.01,"max":720000,"aliquota":0.102,"deduz":12420},
+    {"min":720000.01,"max":1800000,"aliquota":0.14,"deduz":39780},
+    {"min":1800000.01,"max":3600000,"aliquota":0.22,"deduz":183780},
+    {"min":3600000.01,"max":4800000,"aliquota":0.33,"deduz":828000}
+  ],
+  "anexo_V": [
+    {"min":0,"max":180000,"aliquota":0.155,"deduz":0.0},
+    {"min":180000.01,"max":360000,"aliquota":0.18,"deduz":4500},
+    {"min":360000.01,"max":720000,"aliquota":0.195,"deduz":9900},
+    {"min":720000.01,"max":1800000,"aliquota":0.205,"deduz":17100},
+    {"min":1800000.01,"max":3600000,"aliquota":0.23,"deduz":62100},
+    {"min":3600000.01,"max":4800000,"aliquota":0.305,"deduz":540000}
+  ],
+  "irrf_table":[
+    {"max":2259.20,"aliquota":0.0,"deducao":0.0},
+    {"max":2826.65,"aliquota":0.075,"deducao":169.44},
+    {"max":3751.05,"aliquota":0.15,"deducao":381.44},
+    {"max":4664.68,"aliquota":0.225,"deducao":662.77},
+    {"max":999999999.0,"aliquota":0.275,"deducao":896.00}
+  ]
+}

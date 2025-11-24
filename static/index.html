@@ -4,6 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>Pronta+ Inteligência Empresarial - Planejador Tributário — Landing</title>
+    <link rel="icon" href="petroleo.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
@@ -41,7 +42,7 @@
       <section id="app-area" class="app-area hidden">
         <nav class="tabs">
           <button class="tab active" data-target="lucro-presumido">Lucro Presumido</button>
-          <!-- futuras abas podem ser adicionadas aqui -->
+          <button class="tab" data-target="simples-nacional">Simples Nacional</button>
         </nav>
 
         <div class="tab-content">
@@ -87,6 +88,56 @@
                   <tfoot></tfoot>
                 </table>
               </div>
+            </div>
+          </div>
+
+          <div id="simples-nacional" class="panel">
+            <h2>Calculadora — Simples Nacional (Anexo III)</h2>
+            <p>Informe sua receita mensal e acumulada para calcular o imposto.</p>
+            <div class="calc">
+              <div class="calc-controls">
+                <div class="input-group">
+                  <label for="faturamento-simples">Faturamento mensal (R$)</label>
+                  <input id="faturamento-simples" type="number" min="0" step="0.01" placeholder="50000" value="50000" />
+                </div>
+
+                <div class="input-group">
+                  <label>Distribuição de Faturamento</label>
+                  <div class="range-container">
+                    <div class="range-header">
+                      <span class="range-label">Serviço (Anexo III): <strong id="servicePctValSimples">77</strong>%</span>
+                      <span class="range-label">Infoproduto (Anexo I): <strong id="complementPctValSimples">23</strong>%</span>
+                    </div>
+                    <div class="range-control-row">
+                      <input id="servicePercentSimples" type="range" min="0" max="100" value="77" />
+                      <input id="servicePercentInputSimples" type="number" min="0" max="100" step="1" value="77" />
+                    </div>
+                  </div>
+                </div>
+
+                <div class="input-group">
+                  <label for="rbt12">Receita Bruta Acumulada 12 meses (R$)</label>
+                  <input id="rbt12" type="number" min="0" step="0.01" placeholder="600000" />
+                  <small style="color:var(--gray-500); display:block; margin-top:4px;">Se deixar em branco, será estimado (Mensal x 12).</small>
+                </div>
+
+                <div class="input-group" style="display:flex; align-items:center; gap:10px; margin-bottom:16px;">
+                  <input id="less-12-months" type="checkbox" style="width:18px; height:18px;" />
+                  <label for="less-12-months" style="margin:0; cursor:pointer;">Minha empresa tem menos de 12 meses</label>
+                </div>
+
+                <div id="months-activity-group" class="input-group hidden">
+                  <label for="months-activity">Meses de atividade (1 a 12) Completos (sem contar o mês atual)</label>
+                  <input id="months-activity" type="number" min="1" max="12" step="1" placeholder="Ex: 6" />
+                </div>
+
+                <div class="calc-actions">
+                  <button id="calc-run-simples" type="button">Calcular Simples</button>
+                  <button id="calc-reset-simples" type="button" class="secondary">Nova simulação</button>
+                </div>
+              </div>
+
+              <div id="calc-result-simples" class="calc-result"></div>
             </div>
           </div>
         </div>
