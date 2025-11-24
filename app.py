@@ -47,9 +47,9 @@ class Subscriber(db.Model):
             'confirm_token': self.confirm_token
         }
 
-# Create tables on startup
-with app.app_context():
-    db.create_all()
+# Create tables on startup - MOVED to create_db.py or manual init
+# with app.app_context():
+#     db.create_all()
 
 EMAIL_RE = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
 
@@ -336,4 +336,3 @@ if __name__ == '__main__':
     except Exception:
         pass
     app.run(host='0.0.0.0', port=5000, debug=False)
-aumen
