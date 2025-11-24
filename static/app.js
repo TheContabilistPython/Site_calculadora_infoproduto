@@ -594,7 +594,11 @@ document.addEventListener('DOMContentLoaded', function(){
         // Fix Grid Layout for PDF
         const grid = clone.querySelector('div[style*="display:grid"]');
         if(grid) {
-            grid.style.display = 'block'; // Stack vertically for safety or use flex
+            grid.style.display = 'flex';
+            grid.style.flexDirection = 'row';
+            grid.style.flexWrap = 'wrap';
+            grid.style.gap = '15px';
+            grid.style.justifyContent = 'space-between';
         }
 
         // Style the boxes (Service, Info, Scenario)
@@ -602,9 +606,11 @@ document.addEventListener('DOMContentLoaded', function(){
         boxes.forEach(box => {
             box.style.background = '#f9fafb';
             box.style.border = '1px solid #e5e7eb';
-            box.style.marginBottom = '15px';
+            box.style.marginBottom = '0';
             box.style.padding = '15px';
-            box.style.pageBreakInside = 'avoid'; // Prevent breaking inside a box
+            box.style.flex = '1 1 30%'; // Try to fit 3 in a row
+            box.style.minWidth = '200px';
+            box.style.pageBreakInside = 'avoid';
         });
 
         // Fix titles inside boxes
