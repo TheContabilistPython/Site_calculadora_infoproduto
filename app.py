@@ -1,4 +1,5 @@
 from flask import Flask, send_from_directory, request, jsonify, redirect
+from flask_sqlalchemy import SQLAlchemy
 from pathlib import Path
 import re
 import json
@@ -13,9 +14,42 @@ logging.basicConfig(level=logging.INFO)
 
 BASE = Path(__file__).parent
 STATIC = BASE / 'static'
-SUBSCRIBERS = BASE / 'subscribers.json'
 
 app = Flask(__name__, static_folder=str(STATIC), static_url_path='')
+
+# Database Configuration
+# Use SQLite locally if DATABASE_URL is not set, otherwise use the provided URL (Render provides this)
+db_url = os.environ.get('DATABASE_URL', 'sqlite:///subscribers.db')
+if db_url.startswith("postgres://"):
+    db_url = db_url.replace("postgres://", "postgresql://", 1)
+app.config['SQLALCHEMY_DATABASE_URI'] = db_url
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+db = SQLAlchemy(app)
+
+# Database Model
+class Subscriber(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    empresa = db.Column(db.String(200), nullable=False)
+    email = db.Column(db.String(120), unique=True, nullable=False)
+    whatsapp = db.Column(db.String(20), nullable=True)
+    consent = db.Column(db.Boolean, default=True)
+    confirmed = db.Column(db.Boolean, default=False)
+    confirm_token = db.Column(db.String(100), unique=True, nullable=True)
+
+    def to_dict(self):
+        return {
+            'empresa': self.empresa,
+            'email': self.email,
+            'whatsapp': self.whatsapp,
+            'consent': self.consent,
+            'confirmed': self.confirmed,
+            'confirm_token': self.confirm_token
+        }
+
+# Create tables on startup
+with app.app_context():
+    db.create_all()
 
 EMAIL_RE = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
 
@@ -45,23 +79,16 @@ def normalize_whatsapp_number(raw: str) -> str:
     return '55' + digits
 
 def load_subscribers():
-    if not SUBSCRIBERS.exists():
-        return []
-    try:
-        return json.loads(SUBSCRIBERS.read_text(encoding='utf8'))
-    except Exception:
-        return []
+    # Deprecated: Use db.session.query(Subscriber).all() instead
+    return [s.to_dict() for s in Subscriber.query.all()]
 
 def save_subscribers(items):
-    SUBSCRIBERS.write_text(json.dumps(items, indent=2, ensure_ascii=False), encoding='utf8')
+    # Deprecated: No-op, saving is done via db.session.commit()
+    pass
 
 
 def find_subscriber_by_token(token: str):
-    subs = load_subscribers()
-    for s in subs:
-        if s.get('confirm_token') == token:
-            return s
-    return None
+    return Subscriber.query.filter_by(confirm_token=token).first()
 
 
 def send_confirmation_email(to_email: str, confirm_url: str) -> bool:
@@ -143,42 +170,48 @@ def subscribe():
     if not consent:
         return jsonify({'error':'Consentimento obrigatório'}), 400
 
-    subs = load_subscribers()
-    if any(s.get('email') and s.get('email').lower() == email.lower() for s in subs):
-        # if already confirmed, inform; if present but unconfirmed, re-send token
-        existing = next(s for s in subs if s.get('email') and s.get('email').lower() == email.lower())
-        if existing.get('confirmed'):
+    existing = Subscriber.query.filter(Subscriber.email.ilike(email)).first()
+    
+    if existing:
+        if existing.confirmed:
             return jsonify({'message':'E-mail já inscrito e confirmado','confirmed': True}), 200
         else:
-            token = existing.get('confirm_token') or uuid.uuid4().hex
-            existing['confirm_token'] = token
+            # Resend token
+            token = existing.confirm_token or uuid.uuid4().hex
+            existing.confirm_token = token
             try:
-                save_subscribers(subs)
+                db.session.commit()
             except Exception:
+                db.session.rollback()
                 return jsonify({'error':'Não foi possível salvar'}), 500
-            # build confirm URL
+            
             host = request.host_url or 'http://localhost:5000/'
             confirm_url = urljoin(host, f'confirm/{token}')
-            # attempt to send via SMTP, otherwise print fallback link
             sent = send_confirmation_email(email, confirm_url)
             if not sent:
                 print(f'Confirmation link for {email}: {confirm_url}')
             return jsonify({'message':'Verifique seu e-mail para confirmar sua inscrição. (Link impresso no servidor se SMTP não configurado)','confirmed': False}), 200
 
-    # create new entry with unconfirmed flag and token
+    # Create new subscriber
     token = uuid.uuid4().hex
-    entry = {'empresa': empresa, 'email': email, 'consent': True, 'confirmed': False, 'confirm_token': token}
-    if whatsapp:
-        entry['whatsapp'] = normalize_whatsapp_number(whatsapp)
-    subs.append(entry)
+    new_sub = Subscriber(
+        empresa=empresa,
+        email=email,
+        whatsapp=normalize_whatsapp_number(whatsapp) if whatsapp else None,
+        consent=True,
+        confirmed=False,
+        confirm_token=token
+    )
+    
     try:
-        save_subscribers(subs)
+        db.session.add(new_sub)
+        db.session.commit()
     except Exception:
+        db.session.rollback()
         return jsonify({'error':'Não foi possível salvar'}), 500
 
     host = request.host_url or 'http://localhost:5000/'
     confirm_url = urljoin(host, f'confirm/{token}')
-    # attempt to send via SMTP; fallback to printing the link
     sent = send_confirmation_email(email, confirm_url)
     if not sent:
         print(f'Confirmation link for {email}: {confirm_url}')
@@ -187,16 +220,16 @@ def subscribe():
 
 @app.route('/export', methods=['GET'])
 def export_csv():
-    subs = load_subscribers()
+    subs = Subscriber.query.all()
     # build CSV header
     headers = ['empresa', 'email', 'whatsapp', 'consent']
     lines = [','.join(headers)]
     for s in subs:
         row = [
-            '"' + (s.get('empresa','')) + '"',
-            '"' + (s.get('email','')) + '"',
-            '"' + (s.get('whatsapp','')) + '"',
-            '"' + str(bool(s.get('consent')) ) + '"'
+            '"' + (s.empresa or '') + '"',
+            '"' + (s.email or '') + '"',
+            '"' + (s.whatsapp or '') + '"',
+            '"' + str(bool(s.consent)) + '"'
         ]
         lines.append(','.join(row))
 
@@ -209,24 +242,18 @@ def export_csv():
 
 @app.route('/confirm/<token>', methods=['GET'])
 def confirm(token):
-    subs = load_subscribers()
-    changed = False
-    for s in subs:
-        if s.get('confirm_token') == token:
-            s['confirmed'] = True
-            # optionally remove token
-            # s.pop('confirm_token', None)
-            changed = True
-            break
-    if changed:
+    sub = Subscriber.query.filter_by(confirm_token=token).first()
+    if sub:
+        sub.confirmed = True
         try:
-            save_subscribers(subs)
+            db.session.commit()
+            email = sub.email
+            q = quote_plus(email)
+            return redirect(f'/?confirmed_email={q}')
         except Exception:
+            db.session.rollback()
             return "Erro ao confirmar. Tente novamente mais tarde.", 500
-        # redirect to site root with a query param so frontend can auto-open the app
-        email = s.get('email','')
-        q = quote_plus(email)
-        return redirect(f'/?confirmed_email={q}')
+            
     return "Token inválido ou expirado.", 400
 
 
@@ -235,9 +262,9 @@ def is_confirmed():
     email = (request.args.get('email') or '').strip()
     if not email:
         return jsonify({'error':'email missing'}), 400
-    subs = load_subscribers()
-    existing = next((s for s in subs if s.get('email') and s.get('email').lower() == email.lower()), None)
-    return jsonify({'confirmed': bool(existing and existing.get('confirmed'))}), 200
+    
+    sub = Subscriber.query.filter(Subscriber.email.ilike(email)).first()
+    return jsonify({'confirmed': bool(sub and sub.confirmed)}), 200
 
 
 @app.route('/resend', methods=['GET'])
@@ -250,15 +277,17 @@ def resend():
     email = (request.args.get('email') or '').strip()
     if not email:
         return jsonify({'error': 'email missing'}), 400
-    subs = load_subscribers()
-    existing = next((s for s in subs if s.get('email') and s.get('email').lower() == email.lower()), None)
-    if not existing:
+    
+    sub = Subscriber.query.filter(Subscriber.email.ilike(email)).first()
+    if not sub:
         return jsonify({'error': 'not found'}), 404
-    token = existing.get('confirm_token') or uuid.uuid4().hex
-    existing['confirm_token'] = token
+    
+    token = sub.confirm_token or uuid.uuid4().hex
+    sub.confirm_token = token
     try:
-        save_subscribers(subs)
+        db.session.commit()
     except Exception:
+        db.session.rollback()
         return jsonify({'error':'Não foi possível salvar'}), 500
 
     host = request.host_url or 'http://localhost:5000/'
@@ -274,8 +303,8 @@ def resend():
 @app.route('/debug/subscribers', methods=['GET'])
 def debug_subscribers():
     """Temporary debug route: return the list of subscriber emails the server currently sees."""
-    subs = load_subscribers()
-    emails = [s.get('email') for s in subs if s.get('email')]
+    subs = Subscriber.query.all()
+    emails = [s.email for s in subs]
     return jsonify({'count': len(emails), 'emails': emails}), 200
 
 if __name__ == '__main__':
