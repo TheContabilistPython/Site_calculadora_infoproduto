@@ -505,4 +505,144 @@ document.addEventListener('DOMContentLoaded', function(){
     const res = document.getElementById('calc-result-simples');
     if(res) res.innerHTML = '';
   });
+
+  // --- PDF Export Logic ---
+  const btnExportPdf = document.getElementById('btn-export-pdf');
+  if(btnExportPdf) {
+    btnExportPdf.addEventListener('click', () => {
+      // Create a temporary container for the PDF content
+      const reportContainer = document.createElement('div');
+      reportContainer.style.width = '800px'; // Fixed width for A4 consistency
+      reportContainer.style.padding = '40px';
+      reportContainer.style.background = '#ffffff';
+      reportContainer.style.color = '#000000';
+      reportContainer.style.fontFamily = 'Arial, sans-serif';
+      
+      // Header
+      const header = document.createElement('div');
+      header.style.textAlign = 'center';
+      header.style.marginBottom = '30px';
+      header.innerHTML = `
+        <img src="petroleo.svg" style="height: 60px; margin-bottom: 10px;">
+        <h1 style="margin: 0; color: #0f1724; font-size: 24px;">Pronta+ Inteligência Empresarial</h1>
+        <h2 style="margin: 5px 0 0; color: #4b5563; font-size: 18px;">Relatório de Planejamento Tributário</h2>
+        <p style="color: #6b7280; font-size: 12px; margin-top: 5px;">Gerado em: ${new Date().toLocaleDateString('pt-BR')} às ${new Date().toLocaleTimeString('pt-BR')}</p>
+        <hr style="border: 0; border-top: 1px solid #e5e7eb; margin-top: 20px;">
+      `;
+      reportContainer.appendChild(header);
+
+      // Content Wrapper
+      const content = document.createElement('div');
+      let hasContent = false;
+      
+      // Lucro Presumido
+      const lpResult = document.getElementById('calc-result');
+      // Check if table has rows (it's hidden by default but might have content)
+      const lpTableBody = lpResult ? lpResult.querySelector('tbody') : null;
+      
+      if(lpResult && lpTableBody && lpTableBody.children.length > 0) {
+        hasContent = true;
+        const section = document.createElement('div');
+        section.style.marginBottom = '30px';
+        section.innerHTML = `<h3 style="color: #0f1724; border-bottom: 2px solid #bdefff; padding-bottom: 5px;">Lucro Presumido</h3>`;
+        
+        // Clone and style for PDF
+        const clone = lpResult.cloneNode(true);
+        const table = clone.querySelector('table');
+        if(table) {
+            table.style.display = 'table'; // Ensure it's visible
+            table.style.width = '100%';
+            table.style.borderCollapse = 'collapse';
+            table.style.marginTop = '10px';
+            table.style.color = '#000';
+            
+            const ths = table.querySelectorAll('th');
+            ths.forEach(th => {
+                th.style.background = '#f3f4f6';
+                th.style.border = '1px solid #ddd';
+                th.style.padding = '8px';
+                th.style.color = '#000';
+            });
+            
+            const tds = table.querySelectorAll('td');
+            tds.forEach(td => {
+                td.style.border = '1px solid #ddd';
+                td.style.padding = '8px';
+                td.style.color = '#000';
+            });
+        }
+        section.appendChild(clone);
+        content.appendChild(section);
+      }
+
+      // Simples Nacional
+      const snResult = document.getElementById('calc-result-simples');
+      if(snResult && snResult.innerHTML.trim() !== '') {
+        hasContent = true;
+        const section = document.createElement('div');
+        section.style.marginBottom = '30px';
+        section.innerHTML = `<h3 style="color: #0f1724; border-bottom: 2px solid #bdefff; padding-bottom: 5px;">Simples Nacional</h3>`;
+        
+        const clone = snResult.cloneNode(true);
+        
+        // Force text color black
+        const allElements = clone.getElementsByTagName('*');
+        for(let el of allElements) {
+            el.style.color = '#000000';
+        }
+
+        // Fix Grid Layout for PDF
+        const grid = clone.querySelector('div[style*="display:grid"]');
+        if(grid) {
+            grid.style.display = 'block'; // Stack vertically for safety or use flex
+        }
+
+        // Style the boxes (Service, Info, Scenario)
+        const boxes = clone.querySelectorAll('div[style*="border-radius"]');
+        boxes.forEach(box => {
+            box.style.background = '#f9fafb';
+            box.style.border = '1px solid #e5e7eb';
+            box.style.marginBottom = '15px';
+            box.style.padding = '15px';
+            box.style.pageBreakInside = 'avoid'; // Prevent breaking inside a box
+        });
+
+        // Fix titles inside boxes
+        const boxTitles = clone.querySelectorAll('h4');
+        boxTitles.forEach(t => t.style.color = '#000');
+
+        section.appendChild(clone);
+        content.appendChild(section);
+      }
+
+      if(!hasContent) {
+        content.innerHTML = '<p style="text-align:center; color: #666; padding: 20px;">Nenhum cálculo realizado. Por favor, realize uma simulação antes de gerar o relatório.</p>';
+      }
+
+      reportContainer.appendChild(content);
+
+      // Footer
+      const footer = document.createElement('div');
+      footer.style.marginTop = '40px';
+      footer.style.textAlign = 'center';
+      footer.style.fontSize = '10px';
+      footer.style.color = '#9ca3af';
+      footer.innerHTML = `
+        <p>Pronta+ Inteligência Empresarial | Contato: (48) 99632-5028</p>
+        <p>Este relatório é uma simulação e não substitui uma análise tributária oficial.</p>
+      `;
+      reportContainer.appendChild(footer);
+
+      // Generate PDF
+      const opt = {
+        margin: 10,
+        filename: 'Relatorio_Planejamento_Tributario_ProntaMais.pdf',
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      };
+
+      html2pdf().set(opt).from(reportContainer).save();
+    });
+  }
 });
