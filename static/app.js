@@ -436,31 +436,31 @@ document.addEventListener('DOMContentLoaded', function(){
           <div class="breakdown grand" style="text-align:center; max-width:800px; margin:0 auto;">
             <h3>Resultado Simples Nacional</h3>
             <div style="margin-bottom:16px; text-align:center;">
-               <div style="margin:4px 0">Receita Bruta 12 meses (Base): <strong style="color:var(--gray-900)">R$ ${fmt(rbt12)}</strong></div>
+               <div style="margin:4px 0">Receita Bruta 12 meses (Base): <strong style="color:var(--white)">R$ ${fmt(rbt12)}</strong></div>
             </div>
 
             <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px; margin-bottom:20px; text-align:left;">
               <!-- Anexo III (Service) -->
-              <div style="background:rgba(0,0,0,0.03); padding:15px; border-radius:8px;">
-                <h4 style="margin-top:0; color:var(--gray-900)">Serviço (Anexo III)</h4>
+              <div style="background:rgba(255,255,255,0.05); padding:15px; border-radius:8px;">
+                <h4 style="margin-top:0; color:var(--baby-blue)">Serviço (Anexo III)</h4>
                 <div style="font-size:0.9em; margin-bottom:8px;">Faturamento: <strong>R$ ${fmt(revenueService)}</strong> (${servicePct.toFixed(0)}%)</div>
                 <div style="margin:4px 0">Alíquota Nominal: <strong>${(bracketIII.aliquota * 100).toFixed(2)}%</strong></div>
                 <div style="margin:4px 0">Parcela a Deduzir: <strong>R$ ${fmt(bracketIII.deduz)}</strong></div>
                 <div style="margin:4px 0">Alíquota Efetiva: <strong>${(effectiveRateIII * 100).toFixed(2)}%</strong></div>
-                <div style="margin-top:8px; border-top:1px solid #ddd; padding-top:4px;">Imposto: <strong>R$ ${fmt(taxService)}</strong></div>
+                <div style="margin-top:8px; border-top:1px solid rgba(255,255,255,0.2); padding-top:4px;">Imposto: <strong>R$ ${fmt(taxService)}</strong></div>
               </div>
 
               <!-- Anexo I (Infoproduto) -->
-              <div style="background:rgba(0,0,0,0.03); padding:15px; border-radius:8px;">
-                <h4 style="margin-top:0; color:var(--gray-900)">Infoproduto (Anexo I)</h4>
+              <div style="background:rgba(255,255,255,0.05); padding:15px; border-radius:8px;">
+                <h4 style="margin-top:0; color:var(--baby-blue)">Infoproduto (Anexo I)</h4>
                 <div style="font-size:0.9em; margin-bottom:8px;">Faturamento: <strong>R$ ${fmt(revenueInfo)}</strong> (${infoPct.toFixed(0)}%)</div>
                 <div style="margin:4px 0">Alíquota Nominal: <strong>${(bracketI.aliquota * 100).toFixed(2)}%</strong></div>
                 <div style="margin:4px 0">Parcela a Deduzir: <strong>R$ ${fmt(bracketI.deduz)}</strong></div>
                 <div style="margin:4px 0">Alíquota Efetiva: <strong>${(effectiveRateI * 100).toFixed(2)}%</strong></div>
-                <div style="margin-top:8px; border-top:1px solid #ddd; padding-top:4px;">Imposto: <strong>R$ ${fmt(taxInfo)}</strong></div>
+                <div style="margin-top:8px; border-top:1px solid rgba(255,255,255,0.2); padding-top:4px;">Imposto: <strong>R$ ${fmt(taxInfo)}</strong></div>
               </div>
 
-              <div class="break-total" style="grid-column: 1 / -1; font-size:1.3em; border-top:1px solid rgba(0,0,0,0.1); padding-top:12px; color:var(--gray-900); text-align:center;">
+              <div class="break-total" style="grid-column: 1 / -1; font-size:1.3em; border-top:1px solid rgba(255,255,255,0.2); padding-top:12px; color:var(--white); text-align:center;">
                 <div>Total Imposto a Pagar: <strong>R$ ${fmt(totalTax)}</strong></div>
                 <div style="font-size:0.7em; font-weight:normal; margin-top:5px;">Alíquota Efetiva Geral: <strong>${(totalEffectiveRate * 100).toFixed(2)}%</strong></div>
               </div>
