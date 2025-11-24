@@ -442,7 +442,7 @@ document.addEventListener('DOMContentLoaded', function(){
             <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px; margin-bottom:20px; text-align:left;">
               <!-- Anexo III (Service) -->
               <div style="background:rgba(0,0,0,0.03); padding:15px; border-radius:8px;">
-                <h4 style="margin-top:0; color:var(--baby-blue)">Serviço (Anexo III)</h4>
+                <h4 style="margin-top:0; color:var(--gray-900)">Serviço (Anexo III)</h4>
                 <div style="font-size:0.9em; margin-bottom:8px;">Faturamento: <strong>R$ ${fmt(revenueService)}</strong> (${servicePct.toFixed(0)}%)</div>
                 <div style="margin:4px 0">Alíquota Nominal: <strong>${(bracketIII.aliquota * 100).toFixed(2)}%</strong></div>
                 <div style="margin:4px 0">Parcela a Deduzir: <strong>R$ ${fmt(bracketIII.deduz)}</strong></div>
@@ -452,7 +452,7 @@ document.addEventListener('DOMContentLoaded', function(){
 
               <!-- Anexo I (Infoproduto) -->
               <div style="background:rgba(0,0,0,0.03); padding:15px; border-radius:8px;">
-                <h4 style="margin-top:0; color:var(--baby-blue)">Infoproduto (Anexo I)</h4>
+                <h4 style="margin-top:0; color:var(--gray-900)">Infoproduto (Anexo I)</h4>
                 <div style="font-size:0.9em; margin-bottom:8px;">Faturamento: <strong>R$ ${fmt(revenueInfo)}</strong> (${infoPct.toFixed(0)}%)</div>
                 <div style="margin:4px 0">Alíquota Nominal: <strong>${(bracketI.aliquota * 100).toFixed(2)}%</strong></div>
                 <div style="margin:4px 0">Parcela a Deduzir: <strong>R$ ${fmt(bracketI.deduz)}</strong></div>

@@ -212,7 +212,7 @@ body{
 .breakdown h3{margin:0 0 8px 0;font-size:16px}
 .breakdown div{margin:4px 0;color:var(--white)}
 .breakdown .break-total{margin-top:8px;color:var(--baby-blue)}
-.breakdown.grand{background:linear-gradient(90deg,var(--baby-blue),var(--accent));color:var(--black)}
+.breakdown.grand{background:linear-gradient(90deg,#e5e7eb,#d1d5db);color:var(--black)}
 
 
 /* tax table */
