@@ -230,8 +230,9 @@ document.addEventListener('DOMContentLoaded', function(){
           </div>
         `;
 
-        if(resultEl){
-          resultEl.innerHTML = `
+        const breakdownEl = document.getElementById('calc-breakdown');
+        if(breakdownEl){
+          breakdownEl.innerHTML = `
             <div class="result-grid">
               <div class="result-col" id="result-combined">${combinedHtml}</div>
               <div class="result-col" id="result-100">${resumo100Html}</div>
@@ -548,12 +549,15 @@ document.addEventListener('DOMContentLoaded', function(){
         
         // Clone and style for PDF
         const clone = lpResult.cloneNode(true);
+        
+        // Style Table
         const table = clone.querySelector('table');
         if(table) {
             table.style.display = 'table'; // Ensure it's visible
             table.style.width = '100%';
             table.style.borderCollapse = 'collapse';
-            table.style.marginTop = '10px';
+            table.style.marginTop = '20px';
+            table.style.marginBottom = '20px';
             table.style.color = '#000';
             
             const ths = table.querySelectorAll('th');
@@ -571,6 +575,37 @@ document.addEventListener('DOMContentLoaded', function(){
                 td.style.color = '#000';
             });
         }
+
+        // Style Breakdown Grid
+        const grid = clone.querySelector('.result-grid');
+        if(grid) {
+            grid.style.display = 'flex';
+            grid.style.flexDirection = 'row';
+            grid.style.flexWrap = 'wrap';
+            grid.style.gap = '15px';
+            grid.style.justifyContent = 'space-between';
+        }
+
+        // Style Breakdown Boxes
+        const breakdowns = clone.querySelectorAll('.breakdown');
+        breakdowns.forEach(box => {
+            box.style.background = '#f9fafb';
+            box.style.border = '1px solid #e5e7eb';
+            box.style.padding = '15px';
+            box.style.borderRadius = '8px';
+            box.style.color = '#000';
+            box.style.flex = '1 1 30%';
+            box.style.minWidth = '200px';
+            
+            // Fix internal text colors
+            const divs = box.querySelectorAll('div');
+            divs.forEach(d => d.style.color = '#000');
+            const h3 = box.querySelector('h3');
+            if(h3) h3.style.color = '#000';
+            const strongs = box.querySelectorAll('strong');
+            strongs.forEach(s => s.style.color = '#000');
+        });
+
         section.appendChild(clone);
         content.appendChild(section);
       }

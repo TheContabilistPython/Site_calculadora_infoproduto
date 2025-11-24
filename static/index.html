@@ -83,6 +83,7 @@
               </div>
 
               <div id="calc-result" class="calc-result">
+                <div id="calc-breakdown"></div>
                 <table id="tax-table" class="tax-table" style="width:100%;margin-top:10px;display:none;">
                   <thead><tr><th>Imposto</th><th>Serviço (R$)</th><th>INFOPRODUTO (R$)</th></tr></thead>
                   <tbody></tbody>
@@ -142,15 +143,15 @@
             </div>
           </div>
         </div>
+        
+        <div style="text-align:center; margin-top: 20px; margin-bottom: 40px;">
+          <button id="btn-export-pdf" type="button" style="background: linear-gradient(90deg,var(--baby-blue),var(--accent)); color: var(--black); padding: 12px 24px; border-radius: 8px; border: none; font-weight: 700; cursor: pointer; font-size: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.3);">
+            📄 Baixar Relatório PDF
+          </button>
+        </div>
       </section>
 
       <footer class="foot">&copy; <span id="year"></span> Pronta+ Inteligência Empresarial - Planejador Tributário</footer>
-      
-      <div style="text-align:center; margin-top: 20px; margin-bottom: 40px;">
-        <button id="btn-export-pdf" type="button" style="background: linear-gradient(90deg,var(--baby-blue),var(--accent)); color: var(--black); padding: 12px 24px; border-radius: 8px; border: none; font-weight: 700; cursor: pointer; font-size: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.3);">
-          📄 Baixar Relatório PDF
-        </button>
-      </div>
     </main>
 
     <a href="https://wa.me/5548996325028" target="_blank" class="whatsapp-float" title="Fale conosco no WhatsApp">
