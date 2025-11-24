@@ -610,6 +610,61 @@ document.addEventListener('DOMContentLoaded', function(){
         content.appendChild(section);
       }
 
+      // --- Final Comparison Section ---
+      if (lpResult && lpGrid && snResult && snResult.innerHTML.trim() !== '') {
+          let lpTotalText = "0,00";
+          let snTotalText = "0,00";
+
+          // Extract LP Total
+          const lpCompareBox = lpResult.querySelector('#result-compare .breakdown');
+          if(lpCompareBox) {
+             const divs = lpCompareBox.querySelectorAll('div');
+             for(let d of divs) {
+                 if(d.textContent.includes('Seu total:')) {
+                     const strong = d.querySelector('strong');
+                     if(strong) lpTotalText = strong.textContent.replace('R$ ', '').trim();
+                     break;
+                 }
+             }
+          }
+
+          // Extract SN Total
+          const snTotalBox = snResult.querySelector('.break-total');
+          if(snTotalBox) {
+              const firstDiv = snTotalBox.querySelector('div');
+              if(firstDiv && firstDiv.textContent.includes('Total Imposto a Pagar:')) {
+                  const strong = firstDiv.querySelector('strong');
+                  if(strong) snTotalText = strong.textContent.replace('R$ ', '').trim();
+              }
+          }
+
+          // Parse values for highlighting (optional logic could be added here to highlight the winner)
+          // For now, just display them side-by-side as requested
+
+          const section = document.createElement('div');
+          section.style.marginBottom = '30px';
+          section.style.padding = '20px';
+          section.style.background = '#f0fdf4'; // Light green background for "Result" feel
+          section.style.border = '1px solid #bbf7d0';
+          section.style.borderRadius = '8px';
+          
+          section.innerHTML = `
+            <h3 style="color: #166534; margin-top: 0; border-bottom: 1px solid #86efac; padding-bottom: 10px; text-align:center;">Comparativo Final</h3>
+            <div style="display: flex; justify-content: space-around; align-items: center; flex-wrap: wrap; gap: 20px; margin-top: 15px;">
+                <div style="text-align: center; padding: 10px; background: #fff; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); min-width: 200px;">
+                    <p style="margin: 0; color: #4b5563; font-size: 14px; font-weight: 600;">Simples Nacional</p>
+                    <p style="margin: 5px 0 0; font-size: 20px; font-weight: bold; color: #0f1724;">R$ ${snTotalText}</p>
+                </div>
+                <div style="font-size: 16px; color: #6b7280; font-weight: bold;">VS</div>
+                <div style="text-align: center; padding: 10px; background: #fff; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); min-width: 200px;">
+                    <p style="margin: 0; color: #4b5563; font-size: 14px; font-weight: 600;">Lucro Presumido</p>
+                    <p style="margin: 5px 0 0; font-size: 20px; font-weight: bold; color: #0f1724;">R$ ${lpTotalText}</p>
+                </div>
+            </div>
+          `;
+          content.appendChild(section);
+      }
+
       if(!hasContent) {
         content.innerHTML = '<p style="text-align:center; color: #666; padding: 20px;">Nenhum cálculo realizado. Por favor, realize uma simulação antes de gerar o relatório.</p>';
       }
