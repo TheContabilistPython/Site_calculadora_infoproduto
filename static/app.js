@@ -109,7 +109,7 @@ document.addEventListener('DOMContentLoaded', function(){
   function performCalculation(){
     try{
       const faturamento = parseFloat(document.getElementById('faturamento').value) || 0;
-      const servicePct = parseFloat(document.getElementById('servicePercent').value)/100;
+  const servicePct = parseFloat(document.getElementById('servicePercentInput').value)/100;
       const issPct = parseFloat(document.getElementById('iss').value)/100;
 
       // split
@@ -161,7 +161,7 @@ document.addEventListener('DOMContentLoaded', function(){
       // Build breakdown
       const commercePct = (1-servicePct)*100;
       function fmt(v){ return Number(v).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2}); }
-      const breakdownHtml = `
+        const breakdownHtml = `
         <div class="breakdown">
           <h3>SERVIÇO — ${ (servicePct*100).toFixed(0) }%</h3>
           <div>PIS: R$ ${fmt(pis_service)}</div>
@@ -186,7 +186,7 @@ document.addEventListener('DOMContentLoaded', function(){
           <div><strong>R$ ${fmt(grand_total)}</strong></div>
         </div>
       `;
-      const resultEl = document.getElementById('calc-result'); if(resultEl) resultEl.innerHTML = breakdownHtml;
+  const resultEl = document.getElementById('calc-result');
 
       // --- comparative scenario: 100% service ---
       const servicePct100 = 1.0;
@@ -200,28 +200,45 @@ document.addEventListener('DOMContentLoaded', function(){
       const total_service_100 = pis_service_100 + cofins_service_100 + irpj_s_100 + csll_s_100 + iss_service_100;
       const grand_total_100 = total_service_100; // commerce part is zero
 
-      // comparison block
+      // comparison values
       const diff = grand_total - grand_total_100; // positive means current > 100% service
       const diffPct = (diff / (grand_total_100 || 1)) * 100;
-      const comparisonHtml = `
-        <div class="breakdown">
-          <h3>Comparativo — seu cenário vs 100% SERVIÇO</h3>
-          <div>Seu total: <strong>R$ ${fmt(grand_total)}</strong></div>
-          <div>100% Serviço: <strong>R$ ${fmt(grand_total_100)}</strong></div>
-          <div>Diferença: <strong>R$ ${fmt(diff)}</strong> (${diffPct.toFixed(2)}%)</div>
-        </div>
+        // Prepare three columns:
+        // 1) combined: SERVIÇO + INFOPRODUTO + Total geral
+        // 2) resumo: 100% SERVIÇO summary
+        // 3) comparativo: difference between current and 100% serviço
+        const combinedHtml = breakdownHtml; // left column
 
-        <div class="breakdown">
-          <h3>Resumo 100% SERVIÇO</h3>
-          <div>PIS: R$ ${fmt(pis_service_100)}</div>
-          <div>COFINS: R$ ${fmt(cofins_service_100)}</div>
-          <div>IRPJ: R$ ${fmt(irpj_s_100)}</div>
-          <div>CSLL: R$ ${fmt(csll_s_100)}</div>
-          <div>ISS: R$ ${fmt(iss_service_100)}</div>
-          <div class="break-total"><strong>Total 100% serviço: R$ ${fmt(total_service_100)}</strong></div>
-        </div>
-      `;
-      if(resultEl) resultEl.innerHTML += comparisonHtml;
+        const resumo100Html = `
+          <div class="breakdown">
+            <h3>Resumo 100% SERVIÇO</h3>
+            <div>PIS: R$ ${fmt(pis_service_100)}</div>
+            <div>COFINS: R$ ${fmt(cofins_service_100)}</div>
+            <div>IRPJ: R$ ${fmt(irpj_s_100)}</div>
+            <div>CSLL: R$ ${fmt(csll_s_100)}</div>
+            <div>ISS: R$ ${fmt(iss_service_100)}</div>
+            <div class="break-total"><strong>Total 100% serviço: R$ ${fmt(total_service_100)}</strong></div>
+          </div>
+        `;
+
+        const comparativoHtml = `
+          <div class="breakdown">
+            <h3>Comparativo — seu cenário vs 100% SERVIÇO</h3>
+            <div>Seu total: <strong>R$ ${fmt(grand_total)}</strong></div>
+            <div>100% Serviço: <strong>R$ ${fmt(grand_total_100)}</strong></div>
+            <div>Diferença: <strong>R$ ${fmt(diff)}</strong> (${diffPct.toFixed(2)}%)</div>
+          </div>
+        `;
+
+        if(resultEl){
+          resultEl.innerHTML = `
+            <div class="result-grid">
+              <div class="result-col" id="result-combined">${combinedHtml}</div>
+              <div class="result-col" id="result-100">${resumo100Html}</div>
+              <div class="result-col" id="result-compare">${comparativoHtml}</div>
+            </div>
+          `;
+        }
     }catch(err){
       console.error(err);
       const message = document.getElementById('message'); if(message) message.textContent = 'Erro no cálculo. Verifique os valores.';
@@ -231,16 +248,14 @@ document.addEventListener('DOMContentLoaded', function(){
   const calcRunBtn = document.getElementById('calc-run'); if(calcRunBtn) calcRunBtn.addEventListener('click', performCalculation);
 
   // reset simulation
-  const calcReset = document.getElementById('calc-reset');
+      const calcReset = document.getElementById('calc-reset');
   if(calcReset){
     calcReset.addEventListener('click', ()=>{
       // reset inputs to defaults
       const fatur = document.getElementById('faturamento');
-      const svc = document.getElementById('servicePercent');
       const svcInput = document.getElementById('servicePercentInput');
       const iss = document.getElementById('iss');
   if(fatur) fatur.value = 50000;
-  if(svc) svc.value = 77;
   if(svcInput) svcInput.value = 77;
   if(iss) iss.value = 3;
   // update displayed pct values
@@ -262,27 +277,27 @@ document.addEventListener('DOMContentLoaded', function(){
     });
   }
 
-  // slider update
-  const svcSlider = document.getElementById('servicePercent');
   const svcLabel = document.getElementById('servicePctVal');
+  const svcInput = document.getElementById('servicePercentInput');
+  const svcSlider = document.getElementById('servicePercent');
   if(svcSlider){
     svcSlider.addEventListener('input', ()=>{
-      svcLabel.textContent = svcSlider.value;
-      const comp = document.getElementById('complementPctVal'); if(comp) comp.textContent = String(100 - Number(svcSlider.value));
-      const svcInput = document.getElementById('servicePercentInput');
-      if(svcInput) svcInput.value = svcSlider.value;
+      const v = svcSlider.value;
+      const svcInput = document.getElementById('servicePercentInput'); if(svcInput) svcInput.value = v;
+      if(svcLabel) svcLabel.textContent = v;
+      const comp = document.getElementById('complementPctVal'); if(comp) comp.textContent = String(100 - Number(v));
     });
   }
-  const svcInput = document.getElementById('servicePercentInput');
+
   if(svcInput){
     svcInput.addEventListener('input', ()=>{
       let v = parseInt(svcInput.value,10);
       if(Number.isNaN(v)) v = 0;
       if(v<0) v=0; if(v>100) v=100;
       svcInput.value = v;
-      svcSlider.value = v;
-      svcLabel.textContent = v;
+      if(svcLabel) svcLabel.textContent = v;
       const comp = document.getElementById('complementPctVal'); if(comp) comp.textContent = String(100 - Number(v));
+      const svcSlider2 = document.getElementById('servicePercent'); if(svcSlider2) svcSlider2.value = v;
     });
   }
 });

@@ -3,14 +3,15 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>Planejador Tributário — Landing</title>
+    <title>Pronta+ Inteligência Empresarial - Planejador Tributário — Landing</title>
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
     <main class="wrap">
       <header class="hero">
-        <div class="logo">LOGO</div>
-        <h1>Planejador Tributário</h1>
+        <div class="logo"><img src="petroleo.svg" alt="Logo" style="height: 60px;" /></div>
+        <h1 class="brand-title">Pronta+ Inteligência Empresarial</h1>
+        <h2 class="product-title">Planejador Tributário</h2>
         <p class="lead">Organize e otimize suas obrigações fiscais. Inscreva-se para começar.</p>
       </header>
 
@@ -46,23 +47,37 @@
         <div class="tab-content">
           <div id="lucro-presumido" class="panel active">
             <h2>Calculadora — Lucro Presumido</h2>
-            <p>Comece informando receita e custos. (Placeholder inicial)</p>
+            <p>Informe Sua receita e qual produto compõe seu faturamento Serviço ou Infoproduto (Comércio)</p>
             <div class="calc">
-              <label for="faturamento">Faturamento mensal (R$)</label>
-              <input id="faturamento" type="number" min="0" step="0.01" placeholder="50000" value="50000" />
+              <div class="calc-controls">
+                <div class="input-group">
+                  <label for="faturamento">Faturamento mensal (R$)</label>
+                  <input id="faturamento" type="number" min="0" step="0.01" placeholder="50000" value="50000" />
+                </div>
 
-              <label for="servicePercent">Percentual faturado como SERVIÇO: <span id="servicePctVal">77</span>% — Complemento INFOPRODUTO: <span id="complementPctVal">23</span>%</label>
-              <input id="servicePercent" type="range" min="0" max="100" value="77" />
+                <div class="input-group">
+                  <label>Distribuição de Faturamento</label>
+                  <div class="range-container">
+                    <div class="range-header">
+                      <span class="range-label">Serviço: <strong id="servicePctVal">77</strong>%</span>
+                      <span class="range-label">Infoproduto: <strong id="complementPctVal">23</strong>%</span>
+                    </div>
+                    <div class="range-control-row">
+                      <input id="servicePercent" type="range" min="0" max="100" value="77" />
+                      <input id="servicePercentInput" type="number" min="0" max="100" step="1" value="77" />
+                    </div>
+                  </div>
+                </div>
 
-              <label for="servicePercentInput">Ou digite o % de SERVIÇO</label>
-              <input id="servicePercentInput" type="number" min="0" max="100" step="1" value="77" />
+                <div class="input-group">
+                  <label for="iss">ISS sobre serviço (%)</label>
+                  <input id="iss" type="number" min="0" max="10" step="0.1" value="3" />
+                </div>
 
-              <label for="iss">ISS sobre serviço (%)</label>
-              <input id="iss" type="number" min="0" max="10" step="0.1" value="3" />
-
-              <div class="calc-actions">
-                <button id="calc-run" type="button">Calcular</button>
-                <button id="calc-reset" type="button" class="secondary">Nova simulação</button>
+                <div class="calc-actions">
+                  <button id="calc-run" type="button">Calcular</button>
+                  <button id="calc-reset" type="button" class="secondary">Nova simulação</button>
+                </div>
               </div>
 
               <div id="calc-result" class="calc-result">
@@ -77,7 +92,7 @@
         </div>
       </section>
 
-      <footer class="foot">&copy; <span id="year"></span> Planejador Tributário</footer>
+      <footer class="foot">&copy; <span id="year"></span> Pronta+ Inteligência Empresarial - Planejador Tributário</footer>
     </main>
 
     <script src="app.js"></script>
