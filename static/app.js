@@ -137,27 +137,6 @@ document.addEventListener('DOMContentLoaded', function(){
       const total_commerce = pis_commerce + cofins_commerce + irpj_c + csll_c;
       const grand_total = total_service + total_commerce;
 
-  // build table
-  const thead = document.querySelector('#tax-table thead');
-  if(thead) thead.innerHTML = '<tr><th>Imposto</th><th>Serviço (R$)</th><th>INFOPRODUTO (R$)</th><th>Total (R$)</th><th>% do faturamento</th></tr>';
-      const tbody = document.querySelector('#tax-table tbody');
-      if(tbody){
-        tbody.innerHTML = '';
-        function row(name, serv, comm, total, pct){
-          const tr = document.createElement('tr');
-          tr.innerHTML = `<td>${name}</td><td>R$ ${serv.toFixed(2)}</td><td>R$ ${comm.toFixed(2)}</td><td>R$ ${total.toFixed(2)}</td><td>${pct.toFixed(2)}%</td>`;
-          return tr;
-        }
-        tbody.appendChild(row('PIS 0,65%', pis_service, pis_commerce, pis_service+pis_commerce, ((pis_service+pis_commerce)/faturamento*100 || 0)));
-        tbody.appendChild(row('COFINS 3%', cofins_service, cofins_commerce, cofins_service+cofins_commerce, ((cofins_service+cofins_commerce)/faturamento*100 || 0)));
-        tbody.appendChild(row('IRPJ', irpj_s, irpj_c, irpj_s+irpj_c, ((irpj_s+irpj_c)/faturamento*100 || 0)));
-        tbody.appendChild(row('CSLL', csll_s, csll_c, csll_s+csll_c, ((csll_s+csll_c)/faturamento*100 || 0)));
-        tbody.appendChild(row('ISS', iss_service, 0, iss_service, (iss_service/faturamento*100 || 0)));
-      }
-      const tfoot = document.querySelector('#tax-table tfoot');
-      if(tfoot) tfoot.innerHTML = `<tr><th>Subtotal</th><th>R$ ${total_service.toFixed(2)}</th><th>R$ ${total_commerce.toFixed(2)}</th><th>R$ ${grand_total.toFixed(2)}</th><th>${((grand_total/faturamento)*100).toFixed(2)}%</th></tr>`;
-      const tableEl = document.getElementById('tax-table'); if(tableEl) tableEl.style.display = '';
-
       // Build breakdown
       const commercePct = (1-servicePct)*100;
       function fmt(v){ return Number(v).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2}); }
@@ -550,31 +529,9 @@ document.addEventListener('DOMContentLoaded', function(){
         // Clone and style for PDF
         const clone = lpResult.cloneNode(true);
         
-        // Style Table
+        // Remove table if it exists in clone (just in case)
         const table = clone.querySelector('table');
-        if(table) {
-            table.style.display = 'table'; // Ensure it's visible
-            table.style.width = '100%';
-            table.style.borderCollapse = 'collapse';
-            table.style.marginTop = '20px';
-            table.style.marginBottom = '20px';
-            table.style.color = '#000';
-            
-            const ths = table.querySelectorAll('th');
-            ths.forEach(th => {
-                th.style.background = '#f3f4f6';
-                th.style.border = '1px solid #ddd';
-                th.style.padding = '8px';
-                th.style.color = '#000';
-            });
-            
-            const tds = table.querySelectorAll('td');
-            tds.forEach(td => {
-                td.style.border = '1px solid #ddd';
-                td.style.padding = '8px';
-                td.style.color = '#000';
-            });
-        }
+        if(table) table.remove();
 
         // Style Breakdown Grid
         const grid = clone.querySelector('.result-grid');
