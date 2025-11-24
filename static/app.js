@@ -498,6 +498,12 @@ document.addEventListener('DOMContentLoaded', function(){
       reportContainer.style.color = '#000000';
       reportContainer.style.fontFamily = 'Arial, sans-serif';
       
+      // Position off-screen but in DOM to ensure correct rendering
+      reportContainer.style.position = 'absolute';
+      reportContainer.style.left = '-9999px';
+      reportContainer.style.top = '0';
+      document.body.appendChild(reportContainer);
+      
       // Header
       const header = document.createElement('div');
       header.style.textAlign = 'center';
@@ -583,6 +589,14 @@ document.addEventListener('DOMContentLoaded', function(){
             el.style.color = '#000000';
         }
 
+        // Fix main wrapper background (it was dark rgba)
+        const mainWrapper = clone.querySelector('div[style*="background"]');
+        if(mainWrapper) {
+            mainWrapper.style.background = 'transparent';
+            mainWrapper.style.border = 'none';
+            mainWrapper.style.padding = '0';
+        }
+
         // Fix Grid Layout for PDF
         const grid = clone.querySelector('div[style*="display:grid"]');
         if(grid) {
@@ -655,7 +669,9 @@ document.addEventListener('DOMContentLoaded', function(){
         jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
       };
 
-      html2pdf().set(opt).from(reportContainer).save();
+      html2pdf().set(opt).from(reportContainer).save().then(() => {
+        document.body.removeChild(reportContainer);
+      });
     });
   }
 });
