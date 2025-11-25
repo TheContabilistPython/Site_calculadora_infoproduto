@@ -27,6 +27,13 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
 
+@app.before_request
+def force_https():
+    # Heroku forwards the request protocol in X-Forwarded-Proto
+    if request.headers.get('X-Forwarded-Proto') == 'http':
+        url = request.url.replace('http://', 'https://', 1)
+        return redirect(url, code=301)
+
 # Database Model
 class Subscriber(db.Model):
     id = db.Column(db.Integer, primary_key=True)
