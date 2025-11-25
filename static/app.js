@@ -36,6 +36,7 @@ document.addEventListener('DOMContentLoaded', function(){
   form.addEventListener('submit', async function(e){
     e.preventDefault();
     message.textContent = '';
+    message.className = 'message'; // Reset classes
     // cheat bypass: if empresa is exactly '$', don't POST to backend — just open the app
     if(empresa.value.trim() === '$'){
       message.textContent = 'Modo rápido ativado.';
@@ -72,7 +73,9 @@ document.addEventListener('DOMContentLoaded', function(){
       const res = await fetch('/subscribe', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload) });
       const data = await res.json();
       if(res.ok){
-        message.textContent = data.message || 'Verifique seu e-mail para confirmar sua inscrição.';
+        message.textContent = 'Inscrição recebida. Verifique seu e-mail e confirme para acessar.';
+        message.className = 'message success';
+        
         // if server says this email is already confirmed, open the app
         const msg = (data.message || '').toString();
         const msgLower = msg.toLowerCase();
@@ -87,9 +90,11 @@ document.addEventListener('DOMContentLoaded', function(){
         consent.checked = false;
       } else {
         message.textContent = data.error || 'Erro ao inscrever';
+        message.className = 'message error';
       }
     }catch(err){
       message.textContent = 'Erro de rede. Tente novamente.';
+      message.className = 'message error';
     } finally {
       updateButton();
     }
