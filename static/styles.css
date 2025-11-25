@@ -43,6 +43,36 @@ body{
 }
 .card input::placeholder{color:rgba(255,255,255,0.45)}
 
+#submit-btn {
+  width: 100%;
+  padding: 18px;
+  font-size: 20px;
+  font-weight: 800;
+  margin-top: 24px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, var(--baby-blue), var(--accent));
+  color: var(--black);
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+
+#submit-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(127, 211, 255, 0.4);
+  filter: brightness(1.1);
+}
+
+#submit-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background: var(--gray-600);
+  box-shadow: none;
+}
+
 /* --- Calculator Redesign Styles --- */
 
 .input-group {
